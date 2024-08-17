@@ -34,7 +34,7 @@ class DatabaseHandler (context: Context) : SQLiteOpenHelper(context, DATABASE_NA
         onCreate(db)
     }
 
-    fun addLancamento(tipo: String, detalhe: String, valor: Double, data: String) {
+    fun addLancamento(tipo: String, detalhe: String, valor: Double, data: String): Boolean {
         val db = this.writableDatabase
         val values = ContentValues()
         values.put(COLUMN_TIPO, tipo)
@@ -42,8 +42,10 @@ class DatabaseHandler (context: Context) : SQLiteOpenHelper(context, DATABASE_NA
         values.put(COLUMN_VALOR, valor)
         values.put(COLUMN_DATA, data)
 
-        db.insert(TABLE_NAME, null, values)
+        val result =  db.insert(TABLE_NAME, null, values)
         db.close()
+
+        return result != -1L
     }
 
     fun getAllLancamentos(): Cursor {

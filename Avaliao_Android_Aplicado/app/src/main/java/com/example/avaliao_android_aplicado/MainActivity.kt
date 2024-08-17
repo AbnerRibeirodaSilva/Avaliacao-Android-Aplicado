@@ -69,13 +69,35 @@ class MainActivity : AppCompatActivity() {
         btLancar.setOnClickListener {
             val tipo = tipoSpinner.selectedItem.toString()
             val detalhe = detalheSpinner.selectedItem.toString()
-            val valor = etValor.text.toString().toDouble()
+            val valor = etValor.text.toString()
             val data = etData.text.toString()
 
-            val db = DatabaseHandler(this)
-            db.addLancamento(tipo, detalhe, valor, data)
+            if (valor.isEmpty() || data.isEmpty()) {
+                // Exibir mensagem de erro
+                Toast.makeText(this, "Por favor, preencha todos os campos.", Toast.LENGTH_SHORT).show()
+            } else {
+                // Todos os campos estão preenchidos, pode continuar
+                val valorDouble = valor.toDoubleOrNull()
 
-            Toast.makeText(this, "Lançamento salvo com sucesso!", Toast.LENGTH_SHORT).show()
+                if (valorDouble == null || valorDouble <= 0) {
+                    Toast.makeText(this, "Por favor, insira um valor válido.", Toast.LENGTH_SHORT).show()
+                } else {
+
+                    val db = DatabaseHandler(this)
+                    val success = db.addLancamento(tipo, detalhe, valorDouble, data)
+
+                    if (success ) {
+                        Toast.makeText(this, "Lançamento realizado com sucesso!", Toast.LENGTH_SHORT).show()
+
+                        etValor.text.clear()
+                        etData.text.clear()
+                        tipoSpinner.setSelection(0)
+                        detalheSpinner.setSelection(0)
+                    } else {
+                        Toast.makeText(this, "Erro ao realizar o lançamento.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
         }
 
         btLancamentos.setOnClickListener {
